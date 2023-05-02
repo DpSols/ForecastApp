@@ -38,11 +38,9 @@ fun WeatherCard(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Today ${
-                        data.time.format(
-                            DateTimeFormatter.ofPattern("HH:mm")
-                        )
-                    }",
+                    text = data.time.format(
+                        DateTimeFormatter.ofPattern("HH:mm dd/MM")
+                    ),
                     modifier = Modifier.align(Alignment.End),
                     color = Color.White
                 )
