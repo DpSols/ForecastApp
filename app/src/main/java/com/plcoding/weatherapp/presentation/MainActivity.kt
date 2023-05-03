@@ -7,6 +7,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -14,6 +20,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +31,8 @@ import com.plcoding.weatherapp.presentation.ui.theme.LightBlue
 import com.plcoding.weatherapp.presentation.ui.theme.WeatherAppTheme
 import com.plcoding.weatherapp.presentation.ui.theme.White
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.DayOfWeek
+import java.time.LocalDate
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -43,6 +52,13 @@ class MainActivity : ComponentActivity() {
             Manifest.permission.ACCESS_COARSE_LOCATION,
         ))
         var dayIndex: Int = 0
+        val todayOfWeek: DayOfWeek? = viewModel
+            .state
+            .weatherInfo
+            ?.currentWeatherData
+            ?.time
+            ?.dayOfWeek
+
         setContent {
             WeatherAppTheme {
                 Box(
@@ -71,14 +87,18 @@ class MainActivity : ComponentActivity() {
                                         viewModel.loadWeatherInfo(index)
                                     }
                                 ) {
-                                    Text("0${index+3}/05", color = White, fontWeight = FontWeight.ExtraBold)
+                                    Text(
+                                        text = todayOfWeek?.name ?: "",
+                                        color = White,
+                                        fontWeight = FontWeight.ExtraBold)
                                 }
                             }
                         })
                     }
                     if(viewModel.state.isLoading) {
                         CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center)
+                            modifier = Modifier.align(Alignment.Center),
+                            color = LightBlue
                         )
                     }
                     viewModel.state.error?.let { error ->
